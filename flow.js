@@ -66,8 +66,20 @@ module.exports = [
       {
         id: 4,
         type: 'select',
+        params: {
+          checkField: 'status',
+          variants: [
+            {
+              status: 'stable',
+              stepId: 'cache',
+            },{
+              status: 'another-worlds',
+              stepId: 2,
+            },
+          ],
+        },
         next: (data) => {
-          return  data === 'test' ? 3 : 2;
+          return data;;
         }
       },
     ],

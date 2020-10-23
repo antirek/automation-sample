@@ -3,6 +3,7 @@ const cache = require('./cache')();
 
 const worker = new Worker('select', async job => {
   console.log('job data', job.data);
+  console.log('job params', job.data.params);
 
   return 'test';
 });

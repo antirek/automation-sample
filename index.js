@@ -63,31 +63,36 @@ const onCompleted = async job => {
   if (!flowtasks[flowTaskId].logSteps) {
     flowtasks[flowTaskId].logSteps = [];
   };
+  const nextStepId = next ? next(data): null;
   flowtasks[flowTaskId].logSteps.push({
     id: currentStep.id, 
     type: currentStep.type, 
     params: currentStep.params,
     input: flowtask.currentInput,
     output: data,
-    nextStepId: next ? currentStep.next(data): null,
+    nextStepId,
   });
 
   console.log('flowtask', inspect(flowtask,{ showHidden: true, depth: null }));
   if (!next) {
-    console.log('flow end');
+    console.log('flow end, no next step in current step');
 
     delete flowtasks[flowTaskId];
     console.log('current flowtasks', flowtasks);
     return;
   }
-
-  const nextStepId = next(job.returnvalue);
+  
   console.log('nextStepId', nextStepId);
   const flow = getFlow(flowtask.flowId);
   const nextStep = getStep(flow, nextStepId);
 
   console.log('next step', nextStep);
 
+  if(!nextStep) {
+    console.log('flow end, no next step in flow');
+    return;
+  }
+  
   const q = queues[nextStep.type];
   
   flowtasks[flowTaskId].currentStep = nextStep;
