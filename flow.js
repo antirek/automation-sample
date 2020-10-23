@@ -1,4 +1,3 @@
-
 module.exports = [
   {
     id: 'test',
@@ -28,45 +27,48 @@ module.exports = [
     steps: [
       {
         id: 'start',
-        type: 'validate',
-        process: (data) => {
-          return new Promise((resolve, reject) => {
-            resolve(data);
-          });
-        },
-        next: {
-          default: 2,
+        type: 'validate',        
+        next: () => {
+          return 2;
         },
       },
       {
         id: 2,
-        type: 'httprequest',
-        connectionId: 'crm',
+        type: 'httprequest',        
         params: {
           validate: true,
+          connectionId: 'crm',
         },
-        next: [
-          {
-            status: 'success',
-            stepId: 4,
-          },
-          {
-            status: 'fail',
-            stepId: 3,
-          }
-        ],
-      },
-      {
-        id: 3,
-        type: 'email',
-        connectionId: 'email-yandex',
-        params: {
-          to: 'vasya@test.ru',
+        next: (res) => {
+          const status = res.status;
+          const q = [
+            {
+              status: 'success',
+              stepId: 4,
+            },
+            {
+              status: 'fail',
+              stepId: 3,
+            },
+          ];
+          const n = q.find(i => i.status === status);
+          return n.stepId;
         }
       },
       {
+        id: 3,
+        type: 'email',        
+        params: {
+          to: 'vasya@test.ru',
+          connectionId: 'email-yandex',
+        }        
+      },
+      {
         id: 4,
-        type: 'log',         
+        type: 'select',
+        next: (data) => {
+          return  data === 'test' ? 3 : 2;
+        }
       },
     ],
   },

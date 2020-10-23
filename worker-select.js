@@ -1,9 +1,7 @@
 const { Worker, Job } = require('bullmq');
 const cache = require('./cache')();
 
-const worker = new Worker('validate', async job => {  
-
-  console.log('connection', await cache.getConnection('test', 'crm'));
+const worker = new Worker('select', async job => {
   console.log('job data', job.data);
 
   return 'test';
